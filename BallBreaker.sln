@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallBreaker", "BallBreaker\BallBreaker.csproj", "{820625FD-CBA0-4B4B-9DDA-48332FB3D8A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Collision2D", "..\Collision2D\Collision2D\Collision2D.csproj", "{D62B0D19-F703-41E5-90BB-4DF15CD4539C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Collision2D", "Collision2D\Collision2D\Collision2D.csproj", "{652E5608-607C-4243-9359-98E7D651D422}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,14 +21,14 @@ Global
 		{820625FD-CBA0-4B4B-9DDA-48332FB3D8A8}.Release|Any CPU.ActiveCfg = Release|x86
 		{820625FD-CBA0-4B4B-9DDA-48332FB3D8A8}.Release|x86.ActiveCfg = Release|x86
 		{820625FD-CBA0-4B4B-9DDA-48332FB3D8A8}.Release|x86.Build.0 = Release|x86
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Debug|x86.Build.0 = Debug|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Release|x86.ActiveCfg = Release|Any CPU
-		{D62B0D19-F703-41E5-90BB-4DF15CD4539C}.Release|x86.Build.0 = Release|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Debug|x86.Build.0 = Debug|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Release|x86.ActiveCfg = Release|Any CPU
+		{652E5608-607C-4243-9359-98E7D651D422}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
