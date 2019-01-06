@@ -227,3 +227,9 @@
 /processorParam:TextureFormat=Color
 /build:Images/WhitePixel.png
 
+#begin Sound/Success.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Success.wav
+

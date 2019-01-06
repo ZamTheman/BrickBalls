@@ -80,7 +80,12 @@
     <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Collision2D\Collision2D\Collision2D.csproj">
+      <Project>{652E5608-607C-4243-9359-98E7D651D422}</Project>
+      <Name>Collision2D</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

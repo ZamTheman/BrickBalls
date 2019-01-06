@@ -57,6 +57,7 @@ namespace BallBreaker.Screens
 
         private SoundEffect bounce;
         private SoundEffect slide;
+        private SoundEffect success;
 
         private col.Point brickSize = new col.Point(64, 64);
         private Vector aimDirection;
@@ -244,6 +245,7 @@ namespace BallBreaker.Screens
             // Soundeffects
             bounce = content.Load<SoundEffect>("Sound/Bounce");
             slide = content.Load<SoundEffect>("Sound/Slide");
+            success = content.Load<SoundEffect>("Sound/Success");
             soundManager = new SoundManager(bounce);
 
             // GUI Elements
@@ -998,6 +1000,7 @@ namespace BallBreaker.Screens
 
         private void UpdateRows()
         {
+            bool allRemoved = true;
             foreach (var row in gameMatrix)
             {
                 if (row == null)
@@ -1009,8 +1012,13 @@ namespace BallBreaker.Screens
                         row[i] = null;
                         nrBricksDestroyed++;
                     }
+                    else if (row[i] != null)
+                        allRemoved = false;
                 }
             }
+
+            if (allRemoved)
+                success.Play();
         }
 
         private List<CollisionObject> GetIntersections(Ball ball)
@@ -1070,6 +1078,7 @@ namespace BallBreaker.Screens
 
         private void SetupTransition()
         {
+            var totalBricks = 0;
             for (int i = gameMatrix.Count - 1; i > -1; i--)
             {
                 if (gameMatrix[i] == null)
@@ -1078,11 +1087,15 @@ namespace BallBreaker.Screens
                 foreach (var brick in gameMatrix[i])
                 {
                     if (brick != null)
+                    {
                         brick.OldYPos = brick.BoundingBox.Center.Y;
+                        totalBricks++;
+                    }
                 }
             }
 
-            slide.Play();
+            if (totalBricks > 0)
+                slide.Play();
         }
 
         private void EndOfTurn()
