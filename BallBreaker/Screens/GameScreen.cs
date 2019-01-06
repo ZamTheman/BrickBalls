@@ -58,6 +58,7 @@ namespace BallBreaker.Screens
         private SoundEffect bounce;
         private SoundEffect slide;
         private SoundEffect success;
+        private SoundEffectInstance successInstance;
 
         private col.Point brickSize = new col.Point(64, 64);
         private Vector aimDirection;
@@ -66,6 +67,7 @@ namespace BallBreaker.Screens
         private BallFactory ballFactory;
         private SoundManager soundManager;
 
+        private bool successPlayedThisTurn = false;
         private bool playCollissionSound = false;
         private bool validAim = false;
         private bool drawCursor = false;
@@ -111,7 +113,6 @@ namespace BallBreaker.Screens
             oldMouseState = inputManager.GetMouseState();
             SetupBorders();
             StartNewGame();
-            stopWatch.Start();
         }
 
         private void SetupHighScore()
@@ -246,6 +247,8 @@ namespace BallBreaker.Screens
             bounce = content.Load<SoundEffect>("Sound/Bounce");
             slide = content.Load<SoundEffect>("Sound/Slide");
             success = content.Load<SoundEffect>("Sound/Success");
+            successInstance = success.CreateInstance();
+            successInstance.Volume = 0.2f;
             soundManager = new SoundManager(bounce);
 
             // GUI Elements
@@ -414,6 +417,8 @@ namespace BallBreaker.Screens
 
             gameMatrix[0] = SetupTopRow();
             gameState = State.Positioning;
+            stopWatch.Reset();
+            stopWatch.Start();
         }
 
         private void EndTurnClicked()
@@ -779,6 +784,7 @@ namespace BallBreaker.Screens
                 gameMatrix.RemoveAt(gameMatrix.Count - 1);
             gameState = State.Positioning;
             ballFactory.IsFirstBall = true;
+            successPlayedThisTurn = false;
         }
 
         private void PositioningUpdate()
@@ -1017,8 +1023,11 @@ namespace BallBreaker.Screens
                 }
             }
 
-            if (allRemoved)
-                success.Play();
+            if (allRemoved && !successPlayedThisTurn)
+            {
+                successInstance.Play();
+                successPlayedThisTurn = true;
+            }
         }
 
         private List<CollisionObject> GetIntersections(Ball ball)
