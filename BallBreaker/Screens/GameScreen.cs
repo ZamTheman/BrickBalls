@@ -29,10 +29,12 @@ namespace BallBreaker.Screens
 
         private delegate void MenuItemHandler();
 
-        private List<Ball> balls;
-        private Dictionary<Walls, ScreenBorder> borders;
         private ContentManager content;
         private InputManager inputManager;
+        private SoundManager soundManager;
+
+        private List<Ball> balls;
+        private Dictionary<Walls, ScreenBorder> borders;
         private bool debug = false;
         private List<List<Brick>> gameMatrix;
         private int turn = 1;
@@ -55,17 +57,11 @@ namespace BallBreaker.Screens
         private SpriteFont lcdFont;
         private SpriteFont fontSmall;
 
-        private SoundEffect bounce;
-        private SoundEffect slide;
-        private SoundEffect success;
-        private SoundEffectInstance successInstance;
-
         private col.Point brickSize = new col.Point(64, 64);
         private Vector aimDirection;
         private Rectangle screenSize;
         private col.Point playArea;
         private BallFactory ballFactory;
-        private SoundManager soundManager;
 
         private bool successPlayedThisTurn = false;
         private bool playCollissionSound = false;
@@ -98,6 +94,7 @@ namespace BallBreaker.Screens
             this.content = content;
             this.inputManager = inputManager;
             this.screenSize = screenSize;
+            soundManager = new SoundManager();
             folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BounceMadness");
             Directory.CreateDirectory(folderPath);
             SetupHighScore();
@@ -191,7 +188,7 @@ namespace BallBreaker.Screens
                     foreach (var ball in balls)
                         ball.Draw(spriteBatch);
                     if (playCollissionSound)
-                        soundManager.PlayBounceSound();
+                        soundManager.PlaySound(Sounds.Bounce);
                     break;
                 case State.GameOver:
                     DrawGameMatrix(spriteBatch);
@@ -222,6 +219,8 @@ namespace BallBreaker.Screens
         
         public void LoadContent()
         {
+            soundManager.LoadContent(content);
+
             balls = new List<Ball>();
             ballImage = content.Load<Texture2D>("Images/Ball");
             ballFactory.Image = ballImage;
@@ -242,14 +241,6 @@ namespace BallBreaker.Screens
             background = content.Load<Texture2D>("Images/Background");
             gameOverBackground = content.Load<Texture2D>("Images/GameOverBackground");
             newGameBackground = content.Load<Texture2D>("Images/NewGameBackground");
-
-            // Soundeffects
-            bounce = content.Load<SoundEffect>("Sound/Bounce");
-            slide = content.Load<SoundEffect>("Sound/Slide");
-            success = content.Load<SoundEffect>("Sound/Success");
-            successInstance = success.CreateInstance();
-            successInstance.Volume = 0.2f;
-            soundManager = new SoundManager(bounce);
 
             // GUI Elements
             logo = content.Load<Texture2D>("Images/Logo");
@@ -1025,7 +1016,7 @@ namespace BallBreaker.Screens
 
             if (allRemoved && !successPlayedThisTurn)
             {
-                successInstance.Play();
+                soundManager.PlaySound(Sounds.Success);
                 successPlayedThisTurn = true;
             }
         }
@@ -1104,7 +1095,7 @@ namespace BallBreaker.Screens
             }
 
             if (totalBricks > 0)
-                slide.Play();
+                soundManager.PlaySound(Sounds.Slide);
         }
 
         private void EndOfTurn()

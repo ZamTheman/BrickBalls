@@ -1,22 +1,69 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
+using BallBreaker.HelperObjects;
+using Microsoft.Xna.Framework.Content;
 
 namespace BallBreaker.Managers
 {
+    public enum Sounds
+    {
+        Bounce,
+        Slide,
+        Success
+    }
+
     public class SoundManager
     {
-        private SoundEffectInstance bounceSound;
-
-        public SoundManager(SoundEffect bounce)
+        private Dictionary<Sounds, SoundInfo> soundEffects;
+        
+        public void PlaySound(Sounds sound)
         {
-            bounceSound = bounce.CreateInstance();
-            bounceSound.Pitch = 0.75f;
-            bounceSound.Volume = 0.1f;
+            if (!soundEffects.ContainsKey(sound))
+                return;
+
+            if (soundEffects[sound].SoundEffectInstance.State != SoundState.Playing)
+                soundEffects[sound].SoundEffectInstance.Play();
         }
 
-        public void PlayBounceSound()
+        public void LoadContent(ContentManager content)
         {
-            if (bounceSound.State != SoundState.Playing)
-                bounceSound.Play();
+            soundEffects = new Dictionary<Sounds, SoundInfo>();
+
+            var soundEffect = content.Load<SoundEffect>("Sound/Bounce");
+            var soundEffectInstance = soundEffect.CreateInstance();
+            soundEffectInstance.Volume = 0.05f;
+            soundEffectInstance.Pitch = 0.75f;
+            soundEffects.Add(
+                Sounds.Bounce,
+                new SoundInfo()
+                {
+                    SoundEffect = soundEffect,
+                    SoundEffectInstance = soundEffectInstance,
+                });
+
+            soundEffect = content.Load<SoundEffect>("Sound/Slide");
+            soundEffectInstance = soundEffect.CreateInstance();
+            soundEffectInstance.Volume = 1f;
+            soundEffectInstance.Pitch = 0.75f;
+            soundEffects.Add(
+                Sounds.Slide,
+                new SoundInfo()
+                {
+                    SoundEffect = soundEffect,
+                    SoundEffectInstance = soundEffectInstance
+                });
+
+            soundEffect = content.Load<SoundEffect>("Sound/Success");
+            soundEffectInstance = soundEffect.CreateInstance();
+            soundEffectInstance.Volume = 0.2f;
+            soundEffectInstance.Pitch = 1f;
+            soundEffects.Add(
+                Sounds.Success,
+                new SoundInfo()
+                {
+                    SoundEffect = soundEffect,
+                    SoundEffectInstance = soundEffectInstance
+                });
         }
     }
 }

@@ -42,12 +42,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Debug\DebugData.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GuiObjects\GuiItem.cs" />
     <Compile Include="GuiObjects\Menu.cs" />
     <Compile Include="HelperObjects\CollisionObject.cs" />
     <Compile Include="HelperObjects\HitObject.cs" />
+    <Compile Include="HelperObjects\SoundInfo.cs" />
     <Compile Include="Helpers\BallFactory.cs" />
     <Compile Include="Helpers\CollisionChecks.cs" />
     <Compile Include="Helpers\Converters.cs" />
@@ -60,7 +60,6 @@
     <Compile Include="Screens\IScreen.cs" />
     <Compile Include="Sprites\Ball.cs" />
     <Compile Include="Sprites\Brick.cs" />
-    <Compile Include="Sprites\DebugLine.cs" />
     <Compile Include="Sprites\ScreenBorder.cs" />
     <Compile Include="Sprites\SpriteBase.cs" />
     <Compile Include="Sprites\Wall.cs" />
