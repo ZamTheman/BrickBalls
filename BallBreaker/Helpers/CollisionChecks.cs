@@ -1,8 +1,7 @@
-﻿using BallBreaker.Screens;
-using BallBreaker.Sprites;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Collision2D.BasicGeometry;
 using Collision2D.HelperObjects;
+using BallBreaker.Sprites;
 using BallBreaker.HelperObjects;
 using static BallBreaker.HelperObjects.Enums;
 
@@ -13,7 +12,7 @@ namespace BallBreaker.Helpers
         // Walls offsetted one ball radius to be checked with circle center
         private static List<Sprites.Wall> wallSegments;
 
-        public static CollisionObject WallCollision(Ball ball, List<List<Brick>> gameMatrix, Dictionary<Walls, ScreenBorder> borders)
+        public static CollisionObject WallCollision(Ball ball, List<List<Brick>> gameMatrix)
         {
             var firstIntersection = float.MaxValue;
             CollisionObject intersection = new CollisionObject();

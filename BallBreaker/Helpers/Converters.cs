@@ -1,6 +1,6 @@
-﻿using Collision2D.BasicGeometry;
+﻿using Microsoft.Xna.Framework;
+using Collision2D.BasicGeometry;
 using Collision2D.BoundingShapes;
-using Microsoft.Xna.Framework;
 
 namespace BallBreaker.Helpers
 {

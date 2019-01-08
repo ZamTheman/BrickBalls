@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Audio;
-using BallBreaker.HelperObjects;
 using Microsoft.Xna.Framework.Content;
+using BallBreaker.HelperObjects;
 
 namespace BallBreaker.Managers
 {

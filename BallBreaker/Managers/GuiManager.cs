@@ -1,12 +1,12 @@
-﻿using BallBreaker.GuiObjects;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+using BallBreaker.GuiObjects;
 using static BallBreaker.HelperObjects.Enums;
 
 namespace BallBreaker.Managers

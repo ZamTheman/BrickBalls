@@ -1,6 +1,6 @@
-﻿using col = Collision2D.BasicGeometry;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using col = Collision2D.BasicGeometry;
 using Collision2D.BoundingShapes;
 using BallBreaker.Helpers;
 

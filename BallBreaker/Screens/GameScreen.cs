@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using BallBreaker.Managers;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using BallBreaker.Managers;
 using static BallBreaker.HelperObjects.Enums;
 
 namespace BallBreaker.Screens

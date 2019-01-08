@@ -1,6 +1,6 @@
-﻿using BallBreaker.Screens;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using BallBreaker.Screens;
 
 namespace BallBreaker.Managers
 {
