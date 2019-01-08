@@ -43,7 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
-    <Compile Include="GuiObjects\GameBoard.cs" />
+    <Compile Include="Managers\GameManager.cs" />
     <Compile Include="GuiObjects\GuiItem.cs" />
     <Compile Include="GuiObjects\Menu.cs" />
     <Compile Include="HelperObjects\CollisionObject.cs" />
@@ -53,6 +53,8 @@
     <Compile Include="Helpers\BallFactory.cs" />
     <Compile Include="Helpers\CollisionChecks.cs" />
     <Compile Include="Helpers\Converters.cs" />
+    <Compile Include="Managers\GameState.cs" />
+    <Compile Include="Managers\GuiManager.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Managers\ScreenManager.cs" />
     <Compile Include="Managers\SoundManager.cs" />

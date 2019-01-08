@@ -4,8 +4,6 @@ namespace BallBreaker.Managers
 {
     public class InputManager
     {
-        private MouseState oldState; 
-
         public MouseState GetMouseState()
         {
             return Mouse.GetState();

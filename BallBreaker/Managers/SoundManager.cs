@@ -56,7 +56,7 @@ namespace BallBreaker.Managers
             soundEffect = content.Load<SoundEffect>("Sound/Success");
             soundEffectInstance = soundEffect.CreateInstance();
             soundEffectInstance.Volume = 0.2f;
-            soundEffectInstance.Pitch = 1f;
+            soundEffectInstance.Pitch = 0.5f;
             soundEffects.Add(
                 Sounds.Success,
                 new SoundInfo()

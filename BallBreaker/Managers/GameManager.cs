@@ -9,18 +9,13 @@ using BallBreaker.Sprites;
 using col = Collision2D.BasicGeometry;
 using Collision2D.BoundingShapes;
 using BallBreaker.Helpers;
-using BallBreaker.Managers;
 using BallBreaker.HelperObjects;
 using static BallBreaker.HelperObjects.Enums;
 
-namespace BallBreaker.GuiObjects
+namespace BallBreaker.Managers
 {
-    public class GameBoard
+    public class GameManager
     {
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-        public int NrBricksDestroyed { get; set; } = 0;
-        public int Turn { get; set; }
-
         private SoundManager soundManager;
         private InputManager inputManager;
 
@@ -47,7 +42,7 @@ namespace BallBreaker.GuiObjects
         private bool successPlayedThisTurn = false;
         private bool validAim = false;
 
-        public GameBoard(
+        public GameManager(
             int playAreaWidth,
             int playAreaHeight,
             Rectangle screenSize,
@@ -72,7 +67,7 @@ namespace BallBreaker.GuiObjects
             SetupNewGame();
         }
 
-        public void Draw(SpriteBatch spriteBatch, State state)
+        public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(
                 playAreaBackground,
@@ -81,7 +76,7 @@ namespace BallBreaker.GuiObjects
                     playArea.Top),
                 Color.White);
             
-            switch (state)
+            switch (GameState.State)
             {
                 case State.Turn:
                     DrawGameMatrix(spriteBatch);
@@ -141,23 +136,23 @@ namespace BallBreaker.GuiObjects
             playAreaBackground = content.Load<Texture2D>("Images/PlayAreaBackground");
         }
 
-        public void Update(GameTime gameTime, State state)
+        public void Update(GameTime gameTime)
         {
-            switch (state)
+            switch (GameState.State)
             {
                 case State.NewGame:
                     break;
                 case State.Turn:
-                    DuringTurnUpdate(gameTime, state);
+                    DuringTurnUpdate(gameTime);
                     break;
                 case State.Positioning:
-                    PositioningUpdate(state);
+                    PositioningUpdate();
                     break;
                 case State.Aiming:
                     AimingUpdate();
                     break;
                 case State.TurnTransition:
-                    TurnTransitionUpdate(gameTime, state);
+                    TurnTransitionUpdate(gameTime);
                     break;
             }
         }
@@ -166,8 +161,8 @@ namespace BallBreaker.GuiObjects
         {
             ballFactory.BallsInFactory = 1;
             ballFactory.IsFirstBall = true;
-            NrBricksDestroyed = 0;
-            Turn = 1;
+            GameState.NrBricksDestroyed = 0;
+            GameState.Turn = 1;
             gameMatrix = new List<List<Brick>>();
             var totalNrRows = 10;
             for (int i = 0; i < totalNrRows; i++)
@@ -198,7 +193,7 @@ namespace BallBreaker.GuiObjects
             }
         }
 
-        private void TurnTransitionUpdate(GameTime gameTime, State state)
+        private void TurnTransitionUpdate(GameTime gameTime)
         {
             float step = (float)gameTime.ElapsedGameTime.Milliseconds * 0.2f;
             bool transitionCompleted = false;
@@ -234,20 +229,20 @@ namespace BallBreaker.GuiObjects
 
             if (isGameOver)
             {
-                StateChanged.Invoke(this, new StateChangedEventArgs(State.GameOver));
+                GameState.State = State.GameOver;
                 return;
             }
 
             for (int i = gameMatrix.Count - 1; i > 0; i--)
                 gameMatrix[i] = gameMatrix[i - 1];
 
-            Turn++;
+            GameState.Turn++;
             
 
             gameMatrix[0] = SetupTopRow();
             if (gameMatrix.Count > 8)
                 gameMatrix.RemoveAt(gameMatrix.Count - 1);
-            StateChanged.Invoke(this, new StateChangedEventArgs(State.Positioning));
+            GameState.State = State.Positioning;
             ballFactory.IsFirstBall = true;
             successPlayedThisTurn = false;
         }
@@ -256,7 +251,7 @@ namespace BallBreaker.GuiObjects
         {
             var rnd = new Random(DateTime.Now.Millisecond);
             int nrColumns = (int)(playArea.Width / brickSize.X);
-            var maxValue = Turn * (nrColumns - 1);
+            var maxValue = GameState.Turn * (nrColumns - 1);
             var filledCells = rnd.Next(1, nrColumns);
 
             List<int> cellIndexes = new List<int>();
@@ -279,7 +274,7 @@ namespace BallBreaker.GuiObjects
                 else
                     potentialMultiplier = 1;
 
-                cell.Value = rnd.Next(1, potentialMultiplier + 1) * Turn;
+                cell.Value = rnd.Next(1, potentialMultiplier + 1) * GameState.Turn;
 
                 cellsToFill.Add(cell);
             }
@@ -320,12 +315,12 @@ namespace BallBreaker.GuiObjects
                 if (aimDirection != null && validAim && aimDirection.Length > 100)
                 {
                     ballFactory.InitialVelocity = aimDirection;
-                    ballFactory.BallsInFactory = Turn;
+                    ballFactory.BallsInFactory = GameState.Turn;
                     ballFactory.IsFirstBall = true;
-                    StateChanged.Invoke(this, new StateChangedEventArgs(State.Turn));
+                    GameState.State = State.Turn;
                 }
                 else
-                    StateChanged.Invoke(this, new StateChangedEventArgs(State.Positioning));
+                    GameState.State = State.Positioning;
 
                 validAim = false;
             }
@@ -347,7 +342,7 @@ namespace BallBreaker.GuiObjects
                 validAim = false;
         }
 
-        private void PositioningUpdate(State state)
+        private void PositioningUpdate()
         {
             var mouseState = inputManager.GetMouseState();
             var mousePosition = mouseState.Position;
@@ -364,10 +359,10 @@ namespace BallBreaker.GuiObjects
                 screenSize.Height - ballFactory.BallRadius * 2);
 
             if (mouseState.LeftButton == ButtonState.Pressed)
-                StateChanged(this, new StateChangedEventArgs(State.Aiming));
+                GameState.State = State.Aiming;
         }
 
-        private void DuringTurnUpdate(GameTime gameTime, State state)
+        private void DuringTurnUpdate(GameTime gameTime)
         {
             if (ballFactory.IsFirstBall)
             {
@@ -429,7 +424,7 @@ namespace BallBreaker.GuiObjects
             }
 
             if (balls.Count == 0)
-                EndOfTurn(state);
+                EndOfTurn();
 
             UpdateRows();
 
@@ -437,7 +432,7 @@ namespace BallBreaker.GuiObjects
                 ball.Update(gameTime);
         }
 
-        private void EndOfTurn(State state)
+        private void EndOfTurn()
         {
             isGameOver = false;
             if (gameMatrix[gameMatrix.Count - 1] != null)
@@ -451,7 +446,7 @@ namespace BallBreaker.GuiObjects
                 }
             }
 
-            StateChanged.Invoke(this, new StateChangedEventArgs(State.TurnTransition));
+            GameState.State = State.TurnTransition;
             SetupTransition();
         }
 
@@ -489,7 +484,7 @@ namespace BallBreaker.GuiObjects
                     if (row[i] != null && row[i].Counter < 1)
                     {
                         row[i] = null;
-                        NrBricksDestroyed++;
+                        GameState.NrBricksDestroyed++;
                     }
                     else if (row[i] != null)
                         allRemoved = false;
