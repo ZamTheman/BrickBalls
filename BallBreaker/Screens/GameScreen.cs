@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using BallBreaker.Managers;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Linq;
 using BallBreaker.GuiObjects;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.IO;
 using static BallBreaker.HelperObjects.Enums;
 
 namespace BallBreaker.Screens
@@ -82,24 +82,7 @@ namespace BallBreaker.Screens
             gameBoard.StateChanged += StateChangedHandler;
             StartNewGame();
         }
-
-        private void SetupHighScore()
-        {
-            folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BounceMadness");
-            Directory.CreateDirectory(folderPath);
-            var hs = GetHighScore();
-
-            if (hs == string.Empty)
-            {
-                highScorePlayer = playerName;
-                highScore = 1;
-                return;
-            }
-
-            highScorePlayer = hs.Split(',')[0];
-            highScore = int.Parse(hs.Split(',')[1]);
-        }
-
+        
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(background, new Rectangle(0, 0, screenSize.Width, screenSize.Height), Color.White);
@@ -168,81 +151,6 @@ namespace BallBreaker.Screens
             SetupGuiItems();
         }
 
-        private void SetupGuiItems()
-        {
-            guiItems.Add(
-                new GuiItem(
-                    "PLAYER",
-                    "",
-                    0,
-                    138,
-                    256,
-                    92,
-                    grayCorner,
-                    darkGrayCorner,
-                    grayPixel,
-                    darkGrayPixel,
-                    font,
-                    fontSmall,
-                    new List<bool>() { false, true, true, false },
-                    true)
-                );
-
-            guiItems.Add(
-                new GuiItem(
-                    "TURN",
-                    gameBoard.Turn.ToString(),
-                    0,
-                    278,
-                    256,
-                    92,
-                    grayCorner,
-                    darkGrayCorner,
-                    grayPixel,
-                    darkGrayPixel,
-                    font,
-                    fontSmall,
-                    new List<bool>() { false, true, true, false },
-                    true)
-                );
-
-            guiItems.Add(
-                new GuiItem(
-                    "MENU",
-                    "",
-                    screenSize.Right - 256,
-                    screenSize.Bottom - 256,
-                    256,
-                    256,
-                    grayCorner,
-                    darkGrayCorner,
-                    grayPixel,
-                    darkGrayPixel,
-                    font,
-                    fontSmall,
-                    new List<bool>() { true, false, false, false },
-                    false)
-                );
-
-            guiItems.Add(
-               new GuiItem(
-                   "HIGH SCORE",
-                   highScorePlayer,
-                   screenSize.Width - 256,
-                   138,
-                   256,
-                   130,
-                   grayCorner,
-                   darkGrayCorner,
-                   grayPixel,
-                   darkGrayPixel,
-                   font,
-                   fontSmall,
-                   new List<bool>() { true, false, false, true},
-                   false)
-               );
-        }
-
         public void UnloadContent()
         {
             throw new NotImplementedException();
@@ -250,14 +158,15 @@ namespace BallBreaker.Screens
 
         public void Update(GameTime gameTime)
         {
+            var initialGameState = gameState;
             gameBoard.Update(gameTime, gameState);
             menu.Update(gameTime);
             if (gameState == State.NewGame)
             {
-                NewGameUpdate(gameTime);
+                UpdateNewGame(gameTime);
             }
 
-            if (gameState == State.TurnTransition)
+            if (gameState == State.Positioning && initialGameState == State.TurnTransition)
             {
                 guiItems.First(g => g.GetHeader() == "TURN").UpdateText(gameBoard.Turn.ToString());
                 if (gameBoard.Turn > highScore)
@@ -273,28 +182,63 @@ namespace BallBreaker.Screens
                 stopWatch.Stop();
         }
 
-        private void StartNewGame()
+        private void UpdateNewGame(GameTime gameTime)
         {
-            gameState = State.NewGame;
-
-            if (guiItems.Count > 1)
+            cursorTimer -= gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (cursorTimer < 0)
             {
-                guiItems.First(gi => gi.GetHeader() == "TURN").UpdateText("1");
-                guiItems.First(gi => gi.GetHeader() == "HIGH SCORE").UpdateText(highScorePlayer);
+                drawCursor = !drawCursor;
+                cursorTimer = 500;
             }
-        }
 
-        private void TransitionNewGameToPosition()
-        {
-            gameBoard.SetupNewGame();
-            gameState = State.Positioning;
-            stopWatch.Reset();
-            stopWatch.Start();
-        }
+            var keyboardState = inputManager.GetKeyboardState();
+            Regex regex = new Regex(@"^[0-9a-zA-Z]{1,1}");
+            foreach (var key in keyboardState.GetPressedKeys())
+            {
+                if (!oldKeyBoardState.GetPressedKeys().Contains(key))
+                {
+                    if (key == Keys.Back)
+                    {
+                        playerName = playerName.Remove(playerName.Length - 1);
+                        continue;
+                    }
+                    if (key == Keys.Enter && playerName.Length > 0)
+                    {
+                        guiItems.First(gi => gi.GetHeader() == "PLAYER").UpdateText(playerName);
+                        TransitionNewGameToPosition();
+                        return;
+                    }
+                    if (key.ToString().Length > 1)
+                        continue;
+                    if (regex.Match(key.ToString()).Success && playerName.Length < 11)
+                    {
+                        playerName += key.ToString();
+                    }
+                }
+            }
 
-        private void EndTurnClicked()
-        {
-            gameBoard.ClearBalls();
+            var mouseState = inputManager.GetMouseState();
+            var stringSize = font.MeasureString("OK");
+            if (mouseState.Position.X < screenSize.Width * 0.5f + newGameBackground.Width * 0.5f - stringSize.X * 0.5f - 80 ||
+                mouseState.Position.X > screenSize.Width * 0.5f + newGameBackground.Width * 0.5f - stringSize.X * 0.5f - 80 + stringSize.X + 20 ||
+                mouseState.Position.Y < screenSize.Height * 0.5f + newGameBackground.Width * 0.5f - 130 ||
+                mouseState.Position.Y > screenSize.Height * 0.5f + newGameBackground.Width * 0.5f - 130 + stringSize.Y + 10 ||
+                playerName.Length < 1)
+            {
+                highLightOk = false;
+            }
+            else
+                highLightOk = true;
+
+            if (mouseState.LeftButton == ButtonState.Released && oldMouseState.LeftButton == ButtonState.Pressed && highLightOk)
+            {
+                guiItems.First(gi => gi.GetHeader() == "PLAYER").UpdateText(playerName);
+                TransitionNewGameToPosition();
+                return;
+            }
+
+            oldMouseState = mouseState;
+            oldKeyBoardState = keyboardState;
         }
 
         private void DrawNewGameDialog(SpriteBatch spriteBatch)
@@ -484,67 +428,115 @@ namespace BallBreaker.Screens
                 headerColor);
         }
 
-        private void NewGameUpdate(GameTime gameTime)
+        private void TransitionNewGameToPosition()
         {
-            cursorTimer -= gameTime.ElapsedGameTime.TotalMilliseconds;
-            if (cursorTimer < 0)
-            {
-                drawCursor = !drawCursor;
-                cursorTimer = 500;
-            }
-
-            var keyboardState = inputManager.GetKeyboardState();
-            Regex regex = new Regex(@"^[0-9a-zA-Z]{1,1}");
-            foreach (var key in keyboardState.GetPressedKeys())
-            {
-                if (!oldKeyBoardState.GetPressedKeys().Contains(key))
-                {
-                    if (key == Keys.Back)
-                    {
-                        playerName = playerName.Remove(playerName.Length - 1);
-                        continue;
-                    }
-                    if (key == Keys.Enter && playerName.Length > 0)
-                    {
-                        guiItems.First(gi => gi.GetHeader() == "PLAYER").UpdateText(playerName);
-                        TransitionNewGameToPosition();
-                        continue;
-                    }
-                    if (key.ToString().Length > 1)
-                        continue;
-                    if (regex.Match(key.ToString()).Success && playerName.Length < 11)
-                    {
-                        playerName += key.ToString();
-                    }
-                }
-            }
-
-            var mouseState = inputManager.GetMouseState();
-            var stringSize = font.MeasureString("OK");
-            if (mouseState.Position.X < screenSize.Width * 0.5f + newGameBackground.Width * 0.5f - stringSize.X * 0.5f - 80 ||
-                mouseState.Position.X > screenSize.Width * 0.5f + newGameBackground.Width * 0.5f - stringSize.X * 0.5f - 80 + stringSize.X + 20 ||
-                mouseState.Position.Y < screenSize.Height * 0.5f + newGameBackground.Width * 0.5f - 130 ||
-                mouseState.Position.Y > screenSize.Height * 0.5f + newGameBackground.Width * 0.5f - 130 + stringSize.Y + 10 ||
-                playerName.Length < 1)
-            {
-                highLightOk = false;
-            }
-            else
-                highLightOk = true;
-
-            if (mouseState.LeftButton == ButtonState.Released && oldMouseState.LeftButton == ButtonState.Pressed && highLightOk)
-            {
-                guiItems.First(gi => gi.GetHeader() == "PLAYER").UpdateText(playerName);
-                TransitionNewGameToPosition();
-            }
-
-            oldMouseState = mouseState;
-            oldKeyBoardState = keyboardState;
+            gameBoard.SetupNewGame();
+            gameState = State.Positioning;
+            stopWatch.Reset();
+            stopWatch.Start();
         }
 
-        private void ExitClicked()
+        private void SetupHighScore()
         {
-            Exit.Invoke(null, null);
+            folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BounceMadness");
+            Directory.CreateDirectory(folderPath);
+            var hs = GetHighScore();
+
+            if (hs == string.Empty)
+            {
+                highScorePlayer = playerName;
+                highScore = 1;
+                return;
+            }
+
+            highScorePlayer = hs.Split(',')[0];
+            highScore = int.Parse(hs.Split(',')[1]);
+        }
+
+        private void SetupGuiItems()
+        {
+            guiItems.Add(
+                new GuiItem(
+                    "PLAYER",
+                    "",
+                    0,
+                    138,
+                    256,
+                    92,
+                    grayCorner,
+                    darkGrayCorner,
+                    grayPixel,
+                    darkGrayPixel,
+                    font,
+                    fontSmall,
+                    new List<bool>() { false, true, true, false },
+                    true)
+                );
+
+            guiItems.Add(
+                new GuiItem(
+                    "TURN",
+                    gameBoard.Turn.ToString(),
+                    0,
+                    278,
+                    256,
+                    92,
+                    grayCorner,
+                    darkGrayCorner,
+                    grayPixel,
+                    darkGrayPixel,
+                    font,
+                    fontSmall,
+                    new List<bool>() { false, true, true, false },
+                    true)
+                );
+
+            guiItems.Add(
+                new GuiItem(
+                    "MENU",
+                    "",
+                    screenSize.Right - 256,
+                    screenSize.Bottom - 256,
+                    256,
+                    256,
+                    grayCorner,
+                    darkGrayCorner,
+                    grayPixel,
+                    darkGrayPixel,
+                    font,
+                    fontSmall,
+                    new List<bool>() { true, false, false, false },
+                    false)
+                );
+
+            guiItems.Add(
+               new GuiItem(
+                   "HIGH SCORE",
+                   highScorePlayer,
+                   screenSize.Width - 256,
+                   138,
+                   256,
+                   130,
+                   grayCorner,
+                   darkGrayCorner,
+                   grayPixel,
+                   darkGrayPixel,
+                   font,
+                   fontSmall,
+                   new List<bool>() { true, false, false, true},
+                   false)
+               );
+        }
+
+        private void StartNewGame()
+        {
+            gameState = State.NewGame;
+
+            if (guiItems.Count > 1)
+            {
+                guiItems.First(gi => gi.GetHeader() == "TURN").UpdateText("1");
+                guiItems.First(gi => gi.GetHeader() == "HIGH SCORE").UpdateText(highScorePlayer);
+            }
         }
 
         private void SaveHighScore()
@@ -575,9 +567,13 @@ namespace BallBreaker.Screens
             return hs;
         }
 
-        private void StateChangedHandler(object sender, StateChangedEventArgs state)
+        private void EndTurnClicked()
         {
-            gameState = state.state;
+            gameBoard.ClearBalls();
         }
+
+        private void ExitClicked() => Exit.Invoke(null, null);
+
+        private void StateChangedHandler(object sender, StateChangedEventArgs state) => gameState = state.state;
     }
 }

@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BallBreaker.Sprites;
-using col = Collision2D.BasicGeometry;
-using Collision2D.BoundingShapes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using static BallBreaker.HelperObjects.Enums;
+using Microsoft.Xna.Framework.Input;
+using BallBreaker.Sprites;
+using col = Collision2D.BasicGeometry;
+using Collision2D.BoundingShapes;
 using BallBreaker.Helpers;
 using BallBreaker.Managers;
 using BallBreaker.HelperObjects;
-using Microsoft.Xna.Framework.Input;
+using static BallBreaker.HelperObjects.Enums;
 
 namespace BallBreaker.GuiObjects
 {
     public class GameBoard
     {
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+        public int NrBricksDestroyed { get; set; } = 0;
+        public int Turn { get; set; }
+
         private SoundManager soundManager;
         private InputManager inputManager;
 
@@ -42,11 +46,6 @@ namespace BallBreaker.GuiObjects
         private bool playCollissionSound = false;
         private bool successPlayedThisTurn = false;
         private bool validAim = false;
-
-        public int NrBricksDestroyed { get; set; } = 0;
-        public int Turn { get; set; }
-
-        public event EventHandler<StateChangedEventArgs> StateChanged;
 
         public GameBoard(
             int playAreaWidth,
@@ -165,6 +164,10 @@ namespace BallBreaker.GuiObjects
 
         public void SetupNewGame()
         {
+            ballFactory.BallsInFactory = 1;
+            ballFactory.IsFirstBall = true;
+            NrBricksDestroyed = 0;
+            Turn = 1;
             gameMatrix = new List<List<Brick>>();
             var totalNrRows = 10;
             for (int i = 0; i < totalNrRows; i++)
@@ -176,15 +179,6 @@ namespace BallBreaker.GuiObjects
         }
 
         public void ClearBalls() => balls.Clear();
-
-        private void StartNewGame()
-        {
-            ballFactory.BallsInFactory = 1;
-            ballFactory.IsFirstBall = true;
-
-            NrBricksDestroyed = 0;
-            Turn = 1;
-        }
 
         private void DrawAimingBalls(SpriteBatch spriteBatch, col.Vector aim)
         {
