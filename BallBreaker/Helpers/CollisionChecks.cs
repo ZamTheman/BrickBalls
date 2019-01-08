@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Collision2D.BasicGeometry;
 using Collision2D.HelperObjects;
 using BallBreaker.HelperObjects;
+using static BallBreaker.HelperObjects.Enums;
 
 namespace BallBreaker.Helpers
 {
@@ -142,7 +143,7 @@ namespace BallBreaker.Helpers
             SetMovementStep(ball, collisionObject.IntersectionObject);
         }
         
-        public static CollisionObject BrickCollision(Ball ball, Brick brick, bool[,] brickMatrix, bool debug)
+        public static CollisionObject BrickCollision(Ball ball, Brick brick, bool[,] brickMatrix)
         {
             var vectorAsLine = new LineSegment(ball.BoundingCircle.Center, ball.BoundingCircle.Center + ball.MovementStepVector);
 
@@ -212,10 +213,6 @@ namespace BallBreaker.Helpers
             float outAngle = adjustedIntPlaneAngle + diffAngle;
             outAngle = MathHelpers.FixAngleToPositiveWithinOneUnitCircle(outAngle);
             ball.Velocity.Angle = outAngle;
-            if (float.IsNaN(ball.Velocity.X))
-            {
-                string stay = "here";
-            }
 
             SetMovementStep(ball, collisionObject.IntersectionObject);
         }

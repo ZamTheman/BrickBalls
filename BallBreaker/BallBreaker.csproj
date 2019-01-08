@@ -43,9 +43,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
+    <Compile Include="GuiObjects\GameBoard.cs" />
     <Compile Include="GuiObjects\GuiItem.cs" />
     <Compile Include="GuiObjects\Menu.cs" />
     <Compile Include="HelperObjects\CollisionObject.cs" />
+    <Compile Include="HelperObjects\Enums.cs" />
     <Compile Include="HelperObjects\HitObject.cs" />
     <Compile Include="HelperObjects\SoundInfo.cs" />
     <Compile Include="Helpers\BallFactory.cs" />
