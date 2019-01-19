@@ -31,10 +31,11 @@ namespace BallBreaker.Managers
         private col.Vector aimDirection;
 
         private Texture2D brickImage;
+        private Texture2D brickShading;
         private Texture2D ballImage;
         private Texture2D playAreaBackground;
         private Texture2D aimingBall;
-        private Texture2D redPixel;
+        private Texture2D whitePixel;
 
         private SpriteFont largeFont;
         private SpriteFont smallFont;
@@ -77,7 +78,7 @@ namespace BallBreaker.Managers
                 new Vector2(
                     playArea.Left,
                     playArea.Top),
-                Color.White);
+                Color.White * 0.95f);
             
             switch (GameState.State)
             {
@@ -116,7 +117,7 @@ namespace BallBreaker.Managers
             }
 
             foreach (var particleFactory in particleFactories)
-                particleFactory.Draw(spriteBatch, redPixel);
+                particleFactory.Draw(spriteBatch, whitePixel);
             
             if (playCollissionSound)
                 soundManager.PlaySound(Sounds.Bounce);
@@ -135,12 +136,13 @@ namespace BallBreaker.Managers
 
             // Brick
             brickImage = content.Load<Texture2D>("Images/BrickRed");
+            brickShading = content.Load<Texture2D>("Images/BrickShading");
 
             // Aiming
             aimingBall = content.Load<Texture2D>("Images/AimBall");
 
             // Pixels
-            redPixel = content.Load<Texture2D>("Images/RedPixel");
+            whitePixel = content.Load<Texture2D>("Images/WhitePixel");
 
             playAreaBackground = content.Load<Texture2D>("Images/PlayAreaBackground");
         }
@@ -165,8 +167,14 @@ namespace BallBreaker.Managers
                     break;
             }
 
-            foreach (var particleFactory in particleFactories)
-                particleFactory.Update(gameTime);
+            for (int i = particleFactories.Count; i > 0; i--)
+            {
+                if (particleFactories[i - 1].ParticleCount == 0)
+                    particleFactories.Remove(particleFactories[i - 1]);
+
+                else
+                    particleFactories[i - 1].Update(gameTime);
+            }   
         }
 
         public void SetupNewGame()
@@ -302,6 +310,7 @@ namespace BallBreaker.Managers
                 if (cellInfo.Any(c => c.Index == i))
                 {
                     var brick = new Brick();
+                    brick.Image = brickShading;
                     brick.BoundingBox = new Aabb(
                     new col.Point(
                         i * brickSize.X + brickSize.X * 0.5f + borders[Walls.Left].BoundingBox.Width,
@@ -666,9 +675,8 @@ namespace BallBreaker.Managers
                 {
                     if (brick != null)
                     {
-                        brick.Image = brickImage;
                         brick.Font = smallFont;
-                        brick.Draw(spriteBatch);
+                        brick.Draw(spriteBatch, whitePixel);
                     }
                 }
             }

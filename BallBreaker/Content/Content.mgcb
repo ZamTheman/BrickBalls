@@ -44,18 +44,6 @@
 /processorParam:TextureFormat=Compressed
 /build:GameFont.spritefont
 
-#begin Images/GreenPixel.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Images/GreenPixel.png
-
 #begin Images/PlayAreaBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -233,7 +221,13 @@
 /processorParam:Quality=Best
 /build:Sound/Success.wav
 
-#begin Images/RedPixel.png
+#begin Sound/Popp.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound/Popp.wav
+
+#begin Images/BrickShading.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -243,11 +237,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Images/RedPixel.png
-
-#begin Sound/Popp.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sound/Popp.wav
+/build:Images/BrickShading.png
 

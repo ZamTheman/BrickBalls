@@ -52,7 +52,7 @@ namespace BallBreaker.Helpers
             foreach (var particle in particles)
             {
                 var widthHeight = (int)(8 * particle.Scale);
-                spriteBatch.Draw(pixel, new Rectangle((int)particle.Position.X - widthHeight, (int)particle.Position.Y - widthHeight, widthHeight, widthHeight), new Color(255, 255, 255, (int)particle.Alpha));
+                spriteBatch.Draw(pixel, new Rectangle((int)particle.Position.X - widthHeight, (int)particle.Position.Y - widthHeight, widthHeight, widthHeight), new Color(27, 50, 95, (int)particle.Alpha));
             }
         }
 
