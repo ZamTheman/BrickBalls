@@ -24,6 +24,7 @@ namespace BallBreaker.Managers
         private Dictionary<Walls, ScreenBorder> borders;
         private List<Ball> balls;
         private List<List<Brick>> gameMatrix;
+        private List<ParticleFactory> particleFactories;
         private BallFactory ballFactory;
         private col.Point brickSize = new col.Point(64, 64);
 
@@ -33,6 +34,7 @@ namespace BallBreaker.Managers
         private Texture2D ballImage;
         private Texture2D playAreaBackground;
         private Texture2D aimingBall;
+        private Texture2D redPixel;
 
         private SpriteFont largeFont;
         private SpriteFont smallFont;
@@ -64,6 +66,7 @@ namespace BallBreaker.Managers
                 Position = new col.Point(600, 750),
                 BallRadius = 10
             };
+            particleFactories = new List<ParticleFactory>();
             SetupNewGame();
         }
 
@@ -111,6 +114,9 @@ namespace BallBreaker.Managers
                 default:
                     break;
             }
+
+            foreach (var particleFactory in particleFactories)
+                particleFactory.Draw(spriteBatch, redPixel);
             
             if (playCollissionSound)
                 soundManager.PlaySound(Sounds.Bounce);
@@ -132,6 +138,9 @@ namespace BallBreaker.Managers
 
             // Aiming
             aimingBall = content.Load<Texture2D>("Images/AimBall");
+
+            // Pixels
+            redPixel = content.Load<Texture2D>("Images/RedPixel");
 
             playAreaBackground = content.Load<Texture2D>("Images/PlayAreaBackground");
         }
@@ -155,6 +164,9 @@ namespace BallBreaker.Managers
                     TurnTransitionUpdate(gameTime);
                     break;
             }
+
+            foreach (var particleFactory in particleFactories)
+                particleFactory.Update(gameTime);
         }
 
         public void SetupNewGame()
@@ -483,6 +495,11 @@ namespace BallBreaker.Managers
                 {
                     if (row[i] != null && row[i].Counter < 1)
                     {
+                        var particleFactory = new ParticleFactory();
+                        particleFactory.Position = new Vector2(row[i].BoundingBox.Center.X, row[i].BoundingBox.Center.Y);
+                        particleFactory.SetupExplosion();
+                        particleFactories.Add(particleFactory);
+                        soundManager.PlaySound(Sounds.Popp);
                         row[i] = null;
                         GameState.NrBricksDestroyed++;
                     }
@@ -510,8 +527,7 @@ namespace BallBreaker.Managers
 
                 var wallIntObject = CollisionChecks.WallCollision(
                     ball,
-                    gameMatrix,
-                    borders);
+                    gameMatrix);
 
                 if (wallIntObject.IntersectionObject.Intersects)
                     intersections.Add(wallIntObject);

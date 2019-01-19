@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
+    <Compile Include="Helpers\ParticleFactory.cs" />
     <Compile Include="Managers\GameManager.cs" />
     <Compile Include="GuiObjects\GuiItem.cs" />
     <Compile Include="GuiObjects\Menu.cs" />

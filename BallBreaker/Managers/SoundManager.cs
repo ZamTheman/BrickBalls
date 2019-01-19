@@ -9,7 +9,8 @@ namespace BallBreaker.Managers
     {
         Bounce,
         Slide,
-        Success
+        Success,
+        Popp
     }
 
     public class SoundManager
@@ -59,6 +60,18 @@ namespace BallBreaker.Managers
             soundEffectInstance.Pitch = 0.5f;
             soundEffects.Add(
                 Sounds.Success,
+                new SoundInfo()
+                {
+                    SoundEffect = soundEffect,
+                    SoundEffectInstance = soundEffectInstance
+                });
+
+            soundEffect = content.Load<SoundEffect>("Sound/Popp");
+            soundEffectInstance = soundEffect.CreateInstance();
+            soundEffectInstance.Volume = 0.2f;
+            soundEffectInstance.Pitch = 0.5f;
+            soundEffects.Add(
+                Sounds.Popp,
                 new SoundInfo()
                 {
                     SoundEffect = soundEffect,
